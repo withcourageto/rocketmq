@@ -76,7 +76,7 @@ public interface MessageStore {
      * @param group Consumer group that launches this query.
      * @param topic Topic to query.
      * @param queueId Queue ID to query.
-     * @param offset Logical offset to start from.
+     * @param offset Logical offset to start from. 0,1,2,3...      offset * 20 -> 在consume queue 文件中的物理偏移
      * @param maxMsgNums Maximum count of messages to query.
      * @param messageFilter Message filter used to screen desired messages.
      * @return Matched messages.

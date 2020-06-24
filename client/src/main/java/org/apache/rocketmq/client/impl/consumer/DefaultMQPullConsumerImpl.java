@@ -145,7 +145,7 @@ public class DefaultMQPullConsumerImpl implements MQConsumerInner {
         return parseSubscribeMessageQueues(result);
     }
 
-    public Set<MessageQueue> parseSubscribeMessageQueues(Set<MessageQueue> queueSet) {
+    private Set<MessageQueue> parseSubscribeMessageQueues(Set<MessageQueue> queueSet) {
         Set<MessageQueue> resultQueues = new HashSet<MessageQueue>();
         for (MessageQueue messageQueue : queueSet) {
             String userTopic = NamespaceUtil.withoutNamespace(messageQueue.getTopic(),
@@ -279,7 +279,7 @@ public class DefaultMQPullConsumerImpl implements MQConsumerInner {
         return pullResult;
     }
 
-    public void resetTopic(List<MessageExt> msgList) {
+    private void resetTopic(List<MessageExt> msgList) {
         if (null == msgList || msgList.size() == 0) {
             return;
         }
@@ -293,7 +293,7 @@ public class DefaultMQPullConsumerImpl implements MQConsumerInner {
 
     }
 
-    public void subscriptionAutomatically(final String topic) {
+    private void subscriptionAutomatically(final String topic) {
         if (!this.rebalanceImpl.getSubscriptionInner().containsKey(topic)) {
             try {
                 SubscriptionData subscriptionData = FilterAPI.buildSubscriptionData(this.defaultMQPullConsumer.getConsumerGroup(),
@@ -313,7 +313,7 @@ public class DefaultMQPullConsumerImpl implements MQConsumerInner {
         return this.defaultMQPullConsumer.getConsumerGroup();
     }
 
-    public void executeHookBefore(final ConsumeMessageContext context) {
+    private void executeHookBefore(final ConsumeMessageContext context) {
         if (!this.consumeMessageHookList.isEmpty()) {
             for (ConsumeMessageHook hook : this.consumeMessageHookList) {
                 try {
@@ -324,7 +324,7 @@ public class DefaultMQPullConsumerImpl implements MQConsumerInner {
         }
     }
 
-    public void executeHookAfter(final ConsumeMessageContext context) {
+    private void executeHookAfter(final ConsumeMessageContext context) {
         if (!this.consumeMessageHookList.isEmpty()) {
             for (ConsumeMessageHook hook : this.consumeMessageHookList) {
                 try {
@@ -352,7 +352,7 @@ public class DefaultMQPullConsumerImpl implements MQConsumerInner {
 
     @Override
     public Set<SubscriptionData> subscriptions() {
-        Set<SubscriptionData> result = new HashSet<SubscriptionData>();
+        Set<SubscriptionData> result = new HashSet<>();
 
         Set<String> topics = this.defaultMQPullConsumer.getRegisterTopics();
         if (topics != null) {
@@ -384,7 +384,7 @@ public class DefaultMQPullConsumerImpl implements MQConsumerInner {
     public void persistConsumerOffset() {
         try {
             this.isRunning();
-            Set<MessageQueue> mqs = new HashSet<MessageQueue>();
+            Set<MessageQueue> mqs = new HashSet<>();
             Set<MessageQueue> allocateMq = this.rebalanceImpl.getProcessQueueTable().keySet();
             mqs.addAll(allocateMq);
             this.offsetStore.persistAll(mqs);
@@ -529,7 +529,7 @@ public class DefaultMQPullConsumerImpl implements MQConsumerInner {
         return this.pullSyncImpl(mq, subscriptionData, offset, maxNums, true, this.getDefaultMQPullConsumer().getConsumerPullTimeoutMillis());
     }
 
-    public DefaultMQPullConsumer getDefaultMQPullConsumer() {
+    DefaultMQPullConsumer getDefaultMQPullConsumer() {
         return defaultMQPullConsumer;
     }
 

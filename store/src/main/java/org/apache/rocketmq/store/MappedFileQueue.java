@@ -39,7 +39,7 @@ public class MappedFileQueue {
 
     private final int mappedFileSize;
 
-    private final CopyOnWriteArrayList<MappedFile> mappedFiles = new CopyOnWriteArrayList<MappedFile>();
+    private final CopyOnWriteArrayList<MappedFile> mappedFiles = new CopyOnWriteArrayList<>();
 
     private final AllocateMappedFileService allocateMappedFileService;
 
@@ -191,7 +191,7 @@ public class MappedFileQueue {
         return 0;
     }
 
-    public MappedFile getLastMappedFile(final long startOffset, boolean needCreate) {
+    private MappedFile getLastMappedFile(final long startOffset, boolean needCreate) {
         long createOffset = -1;
         MappedFile mappedFileLast = getLastMappedFile();
 
@@ -199,6 +199,7 @@ public class MappedFileQueue {
             createOffset = startOffset - (startOffset % this.mappedFileSize);
         }
 
+        // 最后一个mappedFile 已经写完，创建的偏移位置是此文件的偏移加上文件尺寸
         if (mappedFileLast != null && mappedFileLast.isFull()) {
             createOffset = mappedFileLast.getFileFromOffset() + this.mappedFileSize;
         }
@@ -233,7 +234,7 @@ public class MappedFileQueue {
         return mappedFileLast;
     }
 
-    public MappedFile getLastMappedFile(final long startOffset) {
+    MappedFile getLastMappedFile(final long startOffset) {
         return getLastMappedFile(startOffset, true);
     }
 
@@ -245,6 +246,7 @@ public class MappedFileQueue {
                 mappedFileLast = this.mappedFiles.get(this.mappedFiles.size() - 1);
                 break;
             } catch (IndexOutOfBoundsException e) {
+                // 如果发生了删除，可能会报这个错误，所以需要在循环里获取
                 //continue;
             } catch (Exception e) {
                 log.error("getLastMappedFile has exception.", e);

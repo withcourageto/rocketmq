@@ -16,11 +16,12 @@
  */
 package org.apache.rocketmq.common;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.rocketmq.common.constant.LoggerName;
 import org.apache.rocketmq.logging.InternalLogger;
 import org.apache.rocketmq.logging.InternalLoggerFactory;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class ServiceThread implements Runnable {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.COMMON_LOGGER_NAME);
@@ -30,8 +31,8 @@ public abstract class ServiceThread implements Runnable {
     private Thread thread;
     protected final CountDownLatch2 waitPoint = new CountDownLatch2(1);
     protected volatile AtomicBoolean hasNotified = new AtomicBoolean(false);
-    protected volatile boolean stopped = false;
-    protected boolean isDaemon = false;
+    private volatile boolean stopped = false;
+    private boolean isDaemon = false;
 
     //Make it able to restart the thread
     private final AtomicBoolean started = new AtomicBoolean(false);
@@ -80,7 +81,7 @@ public abstract class ServiceThread implements Runnable {
             }
             long elapsedTime = System.currentTimeMillis() - beginTime;
             log.info("join thread " + this.getServiceName() + " elapsed time(ms) " + elapsedTime + " "
-                + this.getJointime());
+                    + this.getJointime());
         } catch (InterruptedException e) {
             log.error("Interrupted", e);
         }
@@ -132,7 +133,7 @@ public abstract class ServiceThread implements Runnable {
             return;
         }
 
-        //entry to wait
+        //entry to wait, count 设置为初始值
         waitPoint.reset();
 
         try {
@@ -156,7 +157,7 @@ public abstract class ServiceThread implements Runnable {
         return isDaemon;
     }
 
-    public void setDaemon(boolean daemon) {
+    protected void setDaemon(boolean daemon) {
         isDaemon = daemon;
     }
 }

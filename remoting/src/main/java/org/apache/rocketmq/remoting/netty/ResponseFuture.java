@@ -48,7 +48,7 @@ public class ResponseFuture {
         this.once = once;
     }
 
-    public void executeInvokeCallback() {
+    void executeInvokeCallback() {
         if (invokeCallback != null) {
             if (this.executeCallbackOnlyOnce.compareAndSet(false, true)) {
                 invokeCallback.operationComplete(this);
@@ -67,12 +67,12 @@ public class ResponseFuture {
         return diff > this.timeoutMillis;
     }
 
-    public RemotingCommand waitResponse(final long timeoutMillis) throws InterruptedException {
+    RemotingCommand waitResponse(final long timeoutMillis) throws InterruptedException {
         this.countDownLatch.await(timeoutMillis, TimeUnit.MILLISECONDS);
         return this.responseCommand;
     }
 
-    public void putResponse(final RemotingCommand responseCommand) {
+    void putResponse(final RemotingCommand responseCommand) {
         this.responseCommand = responseCommand;
         this.countDownLatch.countDown();
     }
@@ -85,7 +85,7 @@ public class ResponseFuture {
         return sendRequestOK;
     }
 
-    public void setSendRequestOK(boolean sendRequestOK) {
+    void setSendRequestOK(boolean sendRequestOK) {
         this.sendRequestOK = sendRequestOK;
     }
 
@@ -93,7 +93,7 @@ public class ResponseFuture {
         return timeoutMillis;
     }
 
-    public InvokeCallback getInvokeCallback() {
+    InvokeCallback getInvokeCallback() {
         return invokeCallback;
     }
 
@@ -117,7 +117,7 @@ public class ResponseFuture {
         return opaque;
     }
 
-    public Channel getProcessChannel() {
+    Channel getProcessChannel() {
         return processChannel;
     }
 

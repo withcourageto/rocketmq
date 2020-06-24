@@ -53,10 +53,10 @@ public class ScheduleMessageService extends ConfigManager {
     private static final long DELAY_FOR_A_PERIOD = 10000L;
 
     private final ConcurrentMap<Integer /* level */, Long/* delay timeMillis */> delayLevelTable =
-        new ConcurrentHashMap<Integer, Long>(32);
+            new ConcurrentHashMap<>(32);
 
     private final ConcurrentMap<Integer /* level */, Long/* offset */> offsetTable =
-        new ConcurrentHashMap<Integer, Long>(32);
+            new ConcurrentHashMap<>(32);
     private final DefaultMessageStore defaultMessageStore;
     private final AtomicBoolean started = new AtomicBoolean(false);
     private Timer timer;
@@ -68,7 +68,7 @@ public class ScheduleMessageService extends ConfigManager {
         this.writeMessageStore = defaultMessageStore;
     }
 
-    public static int queueId2DelayLevel(final int queueId) {
+    static int queueId2DelayLevel(final int queueId) {
         return queueId + 1;
     }
 
