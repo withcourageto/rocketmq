@@ -128,6 +128,12 @@ public abstract class ServiceThread implements Runnable {
     }
 
     protected void waitForRunning(long interval) {
+
+        /*
+         * 这里有两种情况， wakeup 后
+         *  1. 第一次进入hasNotified is true, 所以这个if将会成功
+         *  2. 第二次进入， hasNotified is false, if 不会成功，将会进入等待逻辑
+         */
         if (hasNotified.compareAndSet(true, false)) {
             this.onWaitEnd();
             return;

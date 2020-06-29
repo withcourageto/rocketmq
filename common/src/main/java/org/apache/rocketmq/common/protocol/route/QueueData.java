@@ -24,6 +24,8 @@ public class QueueData implements Comparable<QueueData> {
     private String brokerName;
     private int readQueueNums;
     private int writeQueueNums;
+
+    // 是否可以读写， 级别是跟随 broker，而不是每一个队列
     private int perm;
     private int topicSynFlag;
 
@@ -99,8 +101,8 @@ public class QueueData implements Comparable<QueueData> {
     @Override
     public String toString() {
         return "QueueData [brokerName=" + brokerName + ", readQueueNums=" + readQueueNums
-            + ", writeQueueNums=" + writeQueueNums + ", perm=" + perm + ", topicSynFlag=" + topicSynFlag
-            + "]";
+                + ", writeQueueNums=" + writeQueueNums + ", perm=" + perm + ", topicSynFlag=" + topicSynFlag
+                + "]";
     }
 
     @Override

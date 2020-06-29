@@ -64,7 +64,7 @@ public class TopAddressing {
         return fetchNSAddr(true, 3000);
     }
 
-    public final String fetchNSAddr(boolean verbose, long timeoutMills) {
+    private String fetchNSAddr(boolean verbose, long timeoutMills) {
         String url = this.wsAddr;
         try {
             if (!UtilAll.isBlank(this.unitName)) {

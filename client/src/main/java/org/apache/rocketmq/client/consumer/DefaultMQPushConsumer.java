@@ -141,7 +141,7 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
     /**
      * Subscription relationship
      */
-    private Map<String /* topic */, String /* sub expression */> subscription = new HashMap<String, String>();
+    private Map<String /* topic */, String /* sub expression */> subscription = new HashMap<>();
 
     /**
      * Message listener
@@ -626,7 +626,7 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
      */
     @Deprecated
     public void setSubscription(Map<String, String> subscription) {
-        Map<String, String> subscriptionWithNamespace = new HashMap<String, String>();
+        Map<String, String> subscriptionWithNamespace = new HashMap<>();
         for (String topic : subscription.keySet()) {
             subscriptionWithNamespace.put(withNamespace(topic), subscription.get(topic));
         }

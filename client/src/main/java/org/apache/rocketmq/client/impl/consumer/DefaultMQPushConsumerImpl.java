@@ -122,7 +122,7 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
         log.info("register FilterMessageHook Hook, {}", hook.hookName());
     }
 
-    public boolean hasHook() {
+    boolean hasHook() {
         return !this.consumeMessageHookList.isEmpty();
     }
 
@@ -209,7 +209,7 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
         this.offsetStore = offsetStore;
     }
 
-    public void pullMessage(final PullRequest pullRequest) {
+    void pullMessage(final PullRequest pullRequest) {
         final ProcessQueue processQueue = pullRequest.getProcessQueue();
         if (processQueue.isDropped()) {
             log.info("the pull request[{}] is dropped.", pullRequest.toString());
@@ -235,6 +235,7 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
         long cachedMessageCount = processQueue.getMsgCount().get();
         long cachedMessageSizeInMiB = processQueue.getMsgSize().get() / (1024 * 1024);
 
+        // 按消息数量流控
         if (cachedMessageCount > this.defaultMQPushConsumer.getPullThresholdForQueue()) {
             this.executePullRequestLater(pullRequest, PULL_TIME_DELAY_MILLS_WHEN_FLOW_CONTROL);
             if ((queueFlowControlTimes++ % 1000) == 0) {
@@ -245,6 +246,7 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
             return;
         }
 
+        // 按消息大小流控
         if (cachedMessageSizeInMiB > this.defaultMQPushConsumer.getPullThresholdSizeForQueue()) {
             this.executePullRequestLater(pullRequest, PULL_TIME_DELAY_MILLS_WHEN_FLOW_CONTROL);
             if ((queueFlowControlTimes++ % 1000) == 0) {
@@ -1014,7 +1016,7 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
     public void persistConsumerOffset() {
         try {
             this.makeSureStateOK();
-            Set<MessageQueue> mqs = new HashSet<MessageQueue>();
+            Set<MessageQueue> mqs = new HashSet<>();
             Set<MessageQueue> allocateMq = this.rebalanceImpl.getProcessQueueTable().keySet();
             mqs.addAll(allocateMq);
 

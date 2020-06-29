@@ -92,19 +92,19 @@ public class MQClientInstance {
     private final int instanceIndex;
     private final String clientId;
     private final long bootTimestamp = System.currentTimeMillis();
-    private final ConcurrentMap<String/* group */, MQProducerInner> producerTable = new ConcurrentHashMap<String, MQProducerInner>();
-    private final ConcurrentMap<String/* group */, MQConsumerInner> consumerTable = new ConcurrentHashMap<String, MQConsumerInner>();
-    private final ConcurrentMap<String/* group */, MQAdminExtInner> adminExtTable = new ConcurrentHashMap<String, MQAdminExtInner>();
+    private final ConcurrentMap<String/* group */, MQProducerInner> producerTable = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String/* group */, MQConsumerInner> consumerTable = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String/* group */, MQAdminExtInner> adminExtTable = new ConcurrentHashMap<>();
     private final NettyClientConfig nettyClientConfig;
     private final MQClientAPIImpl mQClientAPIImpl;
     private final MQAdminImpl mQAdminImpl;
-    private final ConcurrentMap<String/* Topic */, TopicRouteData> topicRouteTable = new ConcurrentHashMap<String, TopicRouteData>();
+    private final ConcurrentMap<String/* Topic */, TopicRouteData> topicRouteTable = new ConcurrentHashMap<>();
     private final Lock lockNamesrv = new ReentrantLock();
     private final Lock lockHeartbeat = new ReentrantLock();
     private final ConcurrentMap<String/* Broker Name */, HashMap<Long/* brokerId */, String/* address */>> brokerAddrTable =
-        new ConcurrentHashMap<String, HashMap<Long, String>>();
+            new ConcurrentHashMap<>();
     private final ConcurrentMap<String/* Broker Name */, HashMap<String/* address */, Integer>> brokerVersionTable =
-        new ConcurrentHashMap<String, HashMap<String, Integer>>();
+            new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
         @Override
         public Thread newThread(Runnable r) {
@@ -273,52 +273,36 @@ public class MQClientInstance {
             }, 1000 * 10, 1000 * 60 * 2, TimeUnit.MILLISECONDS);
         }
 
-        this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    MQClientInstance.this.updateTopicRouteInfoFromNameServer();
-                } catch (Exception e) {
-                    log.error("ScheduledTask updateTopicRouteInfoFromNameServer exception", e);
-                }
+        this.scheduledExecutorService.scheduleAtFixedRate(() -> {
+            try {
+                MQClientInstance.this.updateTopicRouteInfoFromNameServer();
+            } catch (Exception e) {
+                log.error("ScheduledTask updateTopicRouteInfoFromNameServer exception", e);
             }
         }, 10, this.clientConfig.getPollNameServerInterval(), TimeUnit.MILLISECONDS);
 
-        this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    MQClientInstance.this.cleanOfflineBroker();
-                    MQClientInstance.this.sendHeartbeatToAllBrokerWithLock();
-                } catch (Exception e) {
-                    log.error("ScheduledTask sendHeartbeatToAllBroker exception", e);
-                }
+        this.scheduledExecutorService.scheduleAtFixedRate(() -> {
+            try {
+                MQClientInstance.this.cleanOfflineBroker();
+                MQClientInstance.this.sendHeartbeatToAllBrokerWithLock();
+            } catch (Exception e) {
+                log.error("ScheduledTask sendHeartbeatToAllBroker exception", e);
             }
         }, 1000, this.clientConfig.getHeartbeatBrokerInterval(), TimeUnit.MILLISECONDS);
 
-        this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    MQClientInstance.this.persistAllConsumerOffset();
-                } catch (Exception e) {
-                    log.error("ScheduledTask persistAllConsumerOffset exception", e);
-                }
+        this.scheduledExecutorService.scheduleAtFixedRate(() -> {
+            try {
+                MQClientInstance.this.persistAllConsumerOffset();
+            } catch (Exception e) {
+                log.error("ScheduledTask persistAllConsumerOffset exception", e);
             }
         }, 1000 * 10, this.clientConfig.getPersistConsumerOffsetInterval(), TimeUnit.MILLISECONDS);
 
-        this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    MQClientInstance.this.adjustThreadPool();
-                } catch (Exception e) {
-                    log.error("ScheduledTask adjustThreadPool exception", e);
-                }
+        this.scheduledExecutorService.scheduleAtFixedRate(() -> {
+            try {
+                MQClientInstance.this.adjustThreadPool();
+            } catch (Exception e) {
+                log.error("ScheduledTask adjustThreadPool exception", e);
             }
         }, 1, 1, TimeUnit.MINUTES);
     }
@@ -327,8 +311,8 @@ public class MQClientInstance {
         return clientId;
     }
 
-    public void updateTopicRouteInfoFromNameServer() {
-        Set<String> topicList = new HashSet<String>();
+    private void updateTopicRouteInfoFromNameServer() {
+        Set<String> topicList = new HashSet<>();
 
         // Consumer
         {
@@ -372,7 +356,7 @@ public class MQClientInstance {
      * @return newOffsetTable
      */
     public Map<MessageQueue, Long> parseOffsetTableFromBroker(Map<MessageQueue, Long> offsetTable, String namespace) {
-        HashMap<MessageQueue, Long> newOffsetTable = new HashMap<MessageQueue, Long>();
+        HashMap<MessageQueue, Long> newOffsetTable = new HashMap<>();
         if (StringUtils.isNotEmpty(namespace)) {
             for (Entry<MessageQueue, Long> entry : offsetTable.entrySet()) {
                 MessageQueue queue = entry.getKey();
@@ -562,7 +546,7 @@ public class MQClientInstance {
                             try {
                                 int version = this.mQClientAPIImpl.sendHearbeat(addr, heartbeatData, 3000);
                                 if (!this.brokerVersionTable.containsKey(brokerName)) {
-                                    this.brokerVersionTable.put(brokerName, new HashMap<String, Integer>(4));
+                                    this.brokerVersionTable.put(brokerName, new HashMap<>(4));
                                 }
                                 this.brokerVersionTable.get(brokerName).put(addr, version);
                                 if (times % 20 == 0) {

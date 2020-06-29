@@ -119,7 +119,7 @@ public class DefaultMQPullConsumerImpl implements MQConsumerInner {
         }
 
         ConcurrentMap<MessageQueue, ProcessQueue> mqTable = this.rebalanceImpl.getProcessQueueTable();
-        Set<MessageQueue> mqResult = new HashSet<MessageQueue>();
+        Set<MessageQueue> mqResult = new HashSet<>();
         for (MessageQueue mq : mqTable.keySet()) {
             if (mq.getTopic().equals(topic)) {
                 mqResult.add(mq);
