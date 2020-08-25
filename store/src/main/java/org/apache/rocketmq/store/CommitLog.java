@@ -552,6 +552,8 @@ public class CommitLog {
         int queueId = msg.getQueueId();
 
         final int tranType = MessageSysFlag.getTransactionValue(msg.getSysFlag());
+
+        // 由于普通消息的 sysflag 与  TRANSACTION_ROLLBACK_TYPE 进行&运算后为0， 所以 与 TRANSACTION_NOT_TYPE 匹配，这样普通延迟消息也会进入if语句
         if (tranType == MessageSysFlag.TRANSACTION_NOT_TYPE
                 || tranType == MessageSysFlag.TRANSACTION_COMMIT_TYPE) {
             // Delay Delivery
@@ -561,6 +563,7 @@ public class CommitLog {
                 }
 
                 topic = ScheduleMessageService.SCHEDULE_TOPIC;
+                // 意味着 SCHEDULE_TOPIC 默认将会有18个队列
                 queueId = ScheduleMessageService.delayLevel2QueueId(msg.getDelayTimeLevel());
 
                 // Backup real topic, queueId

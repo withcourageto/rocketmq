@@ -217,6 +217,8 @@ public class MappedFile extends ReferenceResource {
 
         if (currentPos < this.fileSize) {
             // writeBuffer 或者 mappedByteBuffer 的 position 指针并不会进行移动，写入位置的移动通过 wrotePosition的值控制
+            // 这样设计的好处是，当读写操作同时进行的时候，读进程和写进程都 从原始buffer 获取到一个完整的buffer , position 不会发生偏移，这样，可以随意的进行位置移动
+            // 否则，原始buffer 的 position 移动了， slice 方法获取的buffer将会有一个偏移，不方便使用
             ByteBuffer byteBuffer = writeBuffer != null ? writeBuffer.slice() : this.mappedByteBuffer.slice();
             byteBuffer.position(currentPos);
             AppendMessageResult result;
@@ -308,6 +310,12 @@ public class MappedFile extends ReferenceResource {
         return this.getFlushedPosition();
     }
 
+    /**
+     * 将 writeBuffer 的数据写入 fileChannle
+     *
+     * @param commitLeastPages 最小提交页面（4k = 1page）数量 , > 0:提交页面， <= 0: 提交写入点（writePosition）之前的数据
+     * @return 返回此mappedFile 的提交点，不是全局提交点
+     */
     public int commit(final int commitLeastPages) {
         if (writeBuffer == null) {
             //no need to commit data to file channel, so just regard wrotePosition as committedPosition.
@@ -322,6 +330,7 @@ public class MappedFile extends ReferenceResource {
             }
         }
 
+        // 所有的writeBuffer 都提交到了 fileChannel , 表明这个mappedFile 已经写完了，没有剩余空间了
         // All dirty data has been committed to FileChannel.
         if (writeBuffer != null && this.transientStorePool != null && this.fileSize == this.committedPosition.get()) {
             this.transientStorePool.returnBuffer(writeBuffer);
@@ -495,6 +504,8 @@ public class MappedFile extends ReferenceResource {
 
     /**
      * ?? ready position or read limit position
+     * <p>
+     * 如果使用 directBuffer + fileChannel 模式， 将会返回提交点， 如果使用 mmap 方式，直接返回写入点
      *
      * @return The max position which have valid data
      */

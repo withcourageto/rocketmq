@@ -42,7 +42,7 @@ public class ProducerManager {
     private static final int GET_AVALIABLE_CHANNEL_RETRY_COUNT = 3;
     private final Lock groupChannelLock = new ReentrantLock();
     private final HashMap<String /* group name */, HashMap<Channel, ClientChannelInfo>> groupChannelTable =
-        new HashMap<String, HashMap<Channel, ClientChannelInfo>>();
+            new HashMap<>();
     private PositiveAtomicCounter positiveAtomicCounter = new PositiveAtomicCounter();
     public ProducerManager() {
     }
@@ -194,11 +194,8 @@ public class ProducerManager {
 
     public Channel getAvaliableChannel(String groupId) {
         HashMap<Channel, ClientChannelInfo> channelClientChannelInfoHashMap = groupChannelTable.get(groupId);
-        List<Channel> channelList = new ArrayList<Channel>();
         if (channelClientChannelInfoHashMap != null) {
-            for (Channel channel : channelClientChannelInfoHashMap.keySet()) {
-                channelList.add(channel);
-            }
+            List<Channel> channelList = new ArrayList<>(channelClientChannelInfoHashMap.keySet());
             int size = channelList.size();
             if (0 == size) {
                 log.warn("Channel list is empty. groupId={}", groupId);

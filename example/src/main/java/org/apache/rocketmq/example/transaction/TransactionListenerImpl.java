@@ -33,6 +33,8 @@ public class TransactionListenerImpl implements TransactionListener {
     public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
         int value = transactionIndex.getAndIncrement();
         int status = value % 3;
+
+        // 这一步在实际应用中应该存表， 将会与业务逻辑处于一个事务
         localTrans.put(msg.getTransactionId(), status);
         return LocalTransactionState.UNKNOW;
     }

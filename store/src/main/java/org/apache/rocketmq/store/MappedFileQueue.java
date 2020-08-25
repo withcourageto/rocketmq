@@ -461,7 +461,7 @@ public class MappedFileQueue {
      * @param returnFirstOnNotFound If the mapped file is not found, then return the first one.
      * @return Mapped file or null (when not found and returnFirstOnNotFound is <code>false</code>).
      */
-    public MappedFile findMappedFileByOffset(final long offset, final boolean returnFirstOnNotFound) {
+    MappedFile findMappedFileByOffset(final long offset, final boolean returnFirstOnNotFound) {
         try {
             MappedFile firstMappedFile = this.getFirstMappedFile();
             MappedFile lastMappedFile = this.getLastMappedFile();
@@ -505,7 +505,7 @@ public class MappedFileQueue {
         return null;
     }
 
-    public MappedFile getFirstMappedFile() {
+    MappedFile getFirstMappedFile() {
         MappedFile mappedFileFirst = null;
 
         if (!this.mappedFiles.isEmpty()) {
@@ -521,11 +521,11 @@ public class MappedFileQueue {
         return mappedFileFirst;
     }
 
-    public MappedFile findMappedFileByOffset(final long offset) {
+    MappedFile findMappedFileByOffset(final long offset) {
         return findMappedFileByOffset(offset, false);
     }
 
-    public long getMappedMemorySize() {
+    long getMappedMemorySize() {
         long size = 0;
 
         Object[] mfs = this.copyMappedFiles(0);
@@ -540,7 +540,7 @@ public class MappedFileQueue {
         return size;
     }
 
-    public boolean retryDeleteFirstFile(final long intervalForcibly) {
+    boolean retryDeleteFirstFile(final long intervalForcibly) {
         MappedFile mappedFile = this.getFirstMappedFile();
         if (mappedFile != null) {
             if (!mappedFile.isAvailable()) {
